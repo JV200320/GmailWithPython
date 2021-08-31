@@ -9,7 +9,4 @@ while True:
     if unread_messages['resultSizeEstimate'] != 0:
         create_notification(unread_messages['messages'],
                             unread_messages['resultSizeEstimate'])
-    else:
-        notification.notify(title='My Gmail Notifier',
-                            message='Você não possui novos emails.')
     sleep(3600)
