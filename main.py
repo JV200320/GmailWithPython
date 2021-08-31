@@ -1,18 +1,15 @@
-import quickstart
+from gmail_api import get_unread_messages
+from notify import create_notification
+from time import sleep
+from plyer import notification
 
-service = quickstart.service
+unread_messages = get_unread_messages()
 
-unread_messages = service.users().messages().list(
-    userId='me', labelIds='UNREAD').execute()
-print("You have {} unread messages.".format(
-    unread_messages['resultSizeEstimate']))
-for message in unread_messages['messages']:
-    content = service.users().messages().get(
-        id=message['id'], userId='me', format='full').execute()
-    message_info = content['payload']['headers']
-    used_info = {}
-    for obj in message_info:
-        if obj['name'].lower() in ['from', 'subject', 'date']:
-            used_info[obj['name'].lower()] = obj['value']
-    print("{} talking about {} - {}".format(
-        used_info['from'].split('<')[0][:-1], used_info['subject'], used_info['date'][:22]))
+while True:
+    if unread_messages['resultSizeEstimate'] != 0:
+        create_notification(unread_messages['messages'],
+                            unread_messages['resultSizeEstimate'])
+    else:
+        notification.notify(title='My Gmail Notifier',
+                            message='Você não possui novos emails.')
+    sleep(3600)

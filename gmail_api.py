@@ -33,17 +33,17 @@ if not creds or not creds.valid:
 
 service = build('gmail', 'v1', credentials=creds)
 
-# Call the Gmail API
-# results = service.users().labels().list(userId='me').execute()
-# labels = results.get('labels', [])
 
-# if not labels:
-#     print('No labels found.')
-# else:
-#     print('Labels:')
-#     for label in labels:
-#         print(label['name'])
+def get_unread_messages():
+    return service.users().messages().list(
+        userId='me', labelIds='UNREAD').execute()
 
 
-# if __name__ == '__main__':
-#     main()
+def get_message_by_id(id):
+    raw = service.users().messages().get(
+        id=id, userId='me', format='full').execute()['payload']['headers']
+    res = {}
+    for obj in raw:
+        if obj['name'].lower() in ['from', 'subject', 'date']:
+            res[obj['name'].lower()] = obj['value']
+    return res
